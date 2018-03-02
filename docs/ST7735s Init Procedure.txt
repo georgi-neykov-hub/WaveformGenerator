@@ -1,0 +1,180 @@
+void initial()
+{
+ 
+//------ Initialization Code  --------------//
+//---ST7735S Reset Sequence--------//
+reset=1; // 
+DelayX1ms(1); // Delay 1 ms
+reset=0; // Pull the reset pin low 
+DelayX1ms(20); // Delay 10 ms
+reset=1; // Pull the reset pin high 
+//--------------------------------End ST7735S Reset Sequence --------------------------------------//
+DelayX1ms(150); // This delay time is necessary
+write_command(0x11); //Sleep out
+DelayX1ms(120); //Delay 120ms
+//------------------------------------ST7735S Frame Rate-----------------------------------------//
+write_command(0xB1);
+write_parameter(0x05);
+write_parameter(0x3C);
+write_parameter(0x3C);
+write_command(0xB2);
+write_parameter(0x05);
+write_parameter(0x3C);
+write_parameter(0x3C);
+write_command(0xB3);
+write_parameter(0x05);
+write_parameter(0x3C);
+write_parameter(0x3C);
+write_parameter(0x05);
+write_parameter(0x3C);
+write_parameter(0x3C);
+//------------------------------------End ST7735S Frame Rate-----------------------------------------//
+write_command(0xB4); //Dot inversion
+write_parameter(0x03);
+//------------------------------------ST7735S Power Sequence-----------------------------------------//
+write_command(0xC0);
+write_parameter(0x28);
+write_parameter(0x08);
+write_parameter(0x04);
+write_command(0xC1);
+write_parameter(0XC0);
+write_command(0xC2);
+write_parameter(0x0D);
+write_parameter(0x00);
+write_command(0xC3);
+write_parameter(0x8D);
+write_parameter(0x2A);
+write_command(0xC4);
+write_parameter(0x8D);
+write_parameter(0xEE);
+//---------------------------------End ST7735S Power Sequence-------------------------------------//
+write_command(0xC5); //VCOM
+write_parameter(0x12);
+ 
+//write_command(0xC7); //VCOM
+//write_parameter(0x1f);
+ 
+write_command(0x36); //MX, MY, RGB mode
+write_parameter(0xC8);//00,08  
+//------------------------------------ST7735S Gamma Sequence-----------------------------------------//
+write_command(0xE0);
+write_parameter(0x04);
+write_parameter(0x22);
+write_parameter(0x07);
+write_parameter(0x0A);
+write_parameter(0x2E);
+write_parameter(0x30);
+write_parameter(0x25);
+write_parameter(0x2A);
+write_parameter(0x28);
+write_parameter(0x26);
+write_parameter(0x2E);
+write_parameter(0x3A);
+write_parameter(0x00);
+write_parameter(0x01);
+write_parameter(0x03);
+write_parameter(0x13);
+write_command(0xE1);
+write_parameter(0x04);
+write_parameter(0x16);
+write_parameter(0x06);
+write_parameter(0x0D);
+write_parameter(0x2D);
+write_parameter(0x26);
+write_parameter(0x23);
+write_parameter(0x27);
+write_parameter(0x27);
+write_parameter(0x25);
+write_parameter(0x2D);
+write_parameter(0x3B);
+write_parameter(0x00);
+write_parameter(0x01);
+write_parameter(0x04);
+write_parameter(0x13);
+//------------------------------------End ST7735S Gamma Sequence-----------------------------------------//
+write_command(0x3A); //65k mode
+write_parameter(0x05);
+ 
+write_command(0x2A); //X Address Setup
+write_parameter(0x00);
+write_parameter(0x00);
+write_parameter(0x00);
+write_parameter(0x7f);
+ 
+write_command(0x2B); //Y Address Setup
+write_parameter(0x00);
+write_parameter(0x00);
+write_parameter(0x00);
+write_parameter(0x9f);
+ 
+write_command(0x29); //Display on
+write_command(0x2C);
+ 
+}
+ 
+void sleep_in()
+{
+    write_command(0x10); //Normal-Mode -> Sleep In-Mode
+    DelayX1ms(150);
+}
+ 
+void sleep_out()
+{
+    write_command(0x11); //Sleep In-Mode -> Normal-Mode
+DelayX1ms(150);
+}
+ 
+void LCD_BlockWrite(kal_uint16 startx,kal_uint16 starty,kal_uint16 endx,kal_uint16 endy)
+{
+ 
+write_command(0x2A); //X Address Setup
+write_parameter(0x00);
+write_parameter(startx);
+write_parameter(0x00);
+write_parameter(endx);
+ 
+write_command(0x2B); //Y Address Setup
+write_parameter(0x00);
+write_parameter(starty);
+write_parameter(0x00);
+write_parameter(endy);
+ 
+write_command(0x2C); //Write Display Data
+ 
+}
+ 
+ 
+void LCD_blockClear(kal_uint16 startx,kal_uint16 starty,kal_uint16 endx,kal_uint16 endy, kal_uint16 data)
+{
+kal_uint16 LCD_x;
+kal_uint16 LCD_y;
+ 
+write_command(0x2A); //X Address Setup
+write_parameter(0x00);
+write_parameter(startx);
+write_parameter(0x00);
+write_parameter(endx);
+ 
+write_command(0x2B); //Y Address Setup
+write_parameter(0x00);
+write_parameter(starty);
+write_parameter(0x00);
+write_parameter(endy);
+ 
+write_command(0x2C); //Write Display Data
+ 
+for(LCD_y=y1; LCD_y<=y2; LCD_y++)
+{
+for(LCD_x=x1; LCD_x<=x2; LCD_x++)
+{
+ 
+#ifdef LCD_16BIT_MODE
+LCD_DataWrite(data);
+#else
+*(volatile kal_uint8 *)LCD_DATA_ADDR = (data&0xFF00)>>8;
+Delay_ms(1);
+*(volatile kal_uint8 *)LCD_DATA_ADDR= data&0xFF;
+#endif
+}
+}
+}

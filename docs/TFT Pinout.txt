@@ -1,0 +1,10 @@
+ST7735s Module   Pro Micro                          Description
+========================================================================
+        GND         GND                             Reference ground
+        VCC         VCC (3.0-5.0V)                  Logic and interface power supply
+        SCK         15 (SPI SCLK)                   SPI Clock
+        SDA         16 (SPI MOSI)                   SPI Output pin
+        RES         A1 (or any other GPIO pin)      Display reset pin
+        RS          A0 (or any other GPIO pin)      
+        CS          A2 (or any other GPIO pin)      Chip/Slave select
+        LEDA        VCC (3.0-5.0V)                  Backlight power supply
